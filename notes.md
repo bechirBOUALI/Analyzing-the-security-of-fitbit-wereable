@@ -16,12 +16,12 @@ $ telnet 127.0.0.1 4444
 3. dump the frimware:
 
 ```bash
-dump_image firmware.bin 0x0 0x40000
+> dump_image firmware.bin 0x0 0x40000
 ```
 4. dissasemble firmware :
 
 ```bash
-arm-none-eabi-objdump -D -b binary -marm openocd-firmware.bin -Mforce-thumb > disas-firmware.s
+$ arm-none-eabi-objdump -D -b binary -marm openocd-firmware.bin -Mforce-thumb > disas-firmware.s
 ```
 5. Debug using gdb server:
 
@@ -31,11 +31,20 @@ gdb$ set arch arm
 gdb$ telnet target remote 127.0.0.1:3333
 ```
 
+## Enabling gdb debugging:
+
+
  
 ## Next Steps
 
 1. Are you able to debug the device while it is running, and for example talking to
 	the phone ?
+
+	[openocd setup](https://www.allaboutcircuits.com/technical-articles/getting-started-with-openocd-using-ft2232h-adapter-for-swd-debugging/)
+	[useful openocd commands](http://openocd.org/doc/html/General-Commands.html)
+	[real time debugging](https://hackaday.com/2012/09/27/beginners-look-at-on-chip-debugging/)
+
+	**check live mode**
 
 2. I think now you should look at Avatar, probably trying to set up a simple demo
 example from the repository on the STM32 nucleo board, to make sure everything       -- > I have problem in avatar2
@@ -44,6 +53,17 @@ works well.
 3. Then, ideally, look at the firmware and identify some function that process
 Bluetooth packets (this also need you to disassemble it, which is not always
 straightforward). 
+
+	-The library in the firmware is almost identical to an open-source library used for an Arduino BLE
+	 Breakout Board.
+
+	-we can also introduce new BLE commands to trigger certain events. One example is the configuration of the debug pins, which we describe in the following section.
+
+
+	 [Bluetooth functions](https://github.com/adafruit/Adafruit_nRF8001/tree/master/utility)
+	 [IDA Pro reverse engineering](https://www.youtube.com/watch?v=V6ZySLopflk)
+	-
+
 
 	[ARM]: https://www.blackhat.com/presentations/bh-europe-04/bh-eu-04-dehaas/bh-eu-04-dehaas.pdf
 
