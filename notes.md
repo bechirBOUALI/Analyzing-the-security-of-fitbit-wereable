@@ -41,7 +41,9 @@ gdb$ telnet target remote 127.0.0.1:3333
 	the phone ?
 
 	[openocd setup](https://www.allaboutcircuits.com/technical-articles/getting-started-with-openocd-using-ft2232h-adapter-for-swd-debugging/)
+
 	[useful openocd commands](http://openocd.org/doc/html/General-Commands.html)
+	
 	[real time debugging](https://hackaday.com/2012/09/27/beginners-look-at-on-chip-debugging/)
 
 	**check live mode**
@@ -61,6 +63,7 @@ straightforward).
 
 
 	 [Bluetooth functions](https://github.com/adafruit/Adafruit_nRF8001/tree/master/utility)
+
 	 [IDA Pro reverse engineering](https://www.youtube.com/watch?v=V6ZySLopflk)
 	-
 
