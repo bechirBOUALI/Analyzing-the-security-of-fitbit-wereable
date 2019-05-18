@@ -5,7 +5,7 @@
 1. run openocd in mode hardware reset:
 
 ```bash
-$ openocd -f interface/stlink-v2-1.cfg -c "transport select hla_swd" -f target/stm32l1.cfg -c "adapter_khz 240" -c "reset_config srst_only srst_nogate connect_assert_srst"
+$ openocd -f interface/stlink-v2-1.cfg -c "transport select hla_swd" -f target/stm32l1.cfg -c "adapter_khz 240" -c "reset_config none separate"
 ```
 2. connect to openocd server
 
