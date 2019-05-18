@@ -33,8 +33,25 @@ gdb$ telnet target remote 127.0.0.1:3333
 
 ## Enabling gdb debugging:
 
+1. patch firmware
 
- 
+```openocd
+> init
+> reset init
+> halt
+> flash write_image erase  firmware.bin 0x08000000
+> reset run
+```
+2. avoid this error while debugging : " jtag status contains invalid mode value - communication failure"
+
+ - we shoud mention this option in openocd config file "reset_config none separate" Then the reset is done internally over the SWD channel.
+
+```bash
+gdb$ monitor halt
+gdb$ monitor poll
+gdb$ hb *address
+gdb$ continue
+``` 
 ## Next Steps
 
 1. Are you able to debug the device while it is running, and for example talking to
@@ -45,13 +62,15 @@ gdb$ telnet target remote 127.0.0.1:3333
 	[useful openocd commands](http://openocd.org/doc/html/General-Commands.html)
 
 	[real time debugging](https://hackaday.com/2012/09/27/beginners-look-at-on-chip-debugging/)
+			http://openocd.zylin.com/#/c/2196/5/tcl/target/stm32f3x.cfg
+			https://nuttx.org/doku.php?id=wiki:howtos:jtag-debugging
 
 	**check live mode**
 
 2. I think now you should look at Avatar, probably trying to set up a simple demo
 example from the repository on the STM32 nucleo board, to make sure everything       -- > I have problem in avatar2
 works well.
-
+ 
 3. Then, ideally, look at the firmware and identify some function that process
 Bluetooth packets (this also need you to disassemble it, which is not always
 straightforward). 
@@ -60,7 +79,6 @@ straightforward).
 	 Breakout Board.
 
 	-we can also introduce new BLE commands to trigger certain events. One example is the configuration of the debug pins, which we describe in the following section.
-
 
 	 [Bluetooth functions](https://github.com/adafruit/Adafruit_nRF8001/tree/master/utility)
 
