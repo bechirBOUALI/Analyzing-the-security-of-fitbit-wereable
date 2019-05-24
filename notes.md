@@ -5,7 +5,7 @@
 1. run openocd in mode hardware reset:
 
 ```bash
-$ openocd -f interface/stlink-v2-1.cfg -c "transport select hla_swd" -f target/stm32l1.cfg -c "adapter_khz 240" -c "reset_config none separate"
+$ openocd -f interface/stlink-v2-1.cfg -c "transport select hla_swd" -f target/stm32l1.cfg -c "adapter_khz 240" -c "reset_config none separate"(-c "reset_config srst_only srst_nogate connect_assert_srst")
 ```
 2. connect to openocd server
 
@@ -33,7 +33,7 @@ gdb$ telnet target remote 127.0.0.1:3333
 
 ## Enabling gdb debugging:
 
-1. patch firmware
+1. patch firmware: this step is important to enable debuggiong otherwise the device will crash when trying to debug it 
 
 ```openocd
 > init
@@ -49,13 +49,15 @@ gdb$ telnet target remote 127.0.0.1:3333
 ```bash
 gdb$ monitor halt
 gdb$ monitor poll
-gdb$ hb *address
+gdb$ hb *address for hardware breakpoint
 gdb$ continue
 ``` 
 ## Next Steps
 
 1. Are you able to debug the device while it is running, and for example talking to
 	the phone ?
+
+	**I think best breakpoint we can make , is to find the address of the sync function then we can check it with gdb**
 
 	[openocd setup](https://www.allaboutcircuits.com/technical-articles/getting-started-with-openocd-using-ft2232h-adapter-for-swd-debugging/)
 
@@ -67,11 +69,11 @@ gdb$ continue
 
 	**check live mode**
 
-2. I think now you should look at Avatar, probably trying to set up a simple demo
-example from the repository on the STM32 nucleo board, to make sure everything       -- > I have problem in avatar2
+2. [Done]: I think now you should look at Avatar, probably trying to set up a simple demo
+example from the repository on the STM32 nucleo board, to make sure everything    
 works well.
  
-3. Then, ideally, look at the firmware and identify some function that process
+3. [Done]: Then, ideally, look at the firmware and identify some function that process
 Bluetooth packets (this also need you to disassemble it, which is not always
 straightforward). 
 
@@ -86,8 +88,22 @@ straightforward).
 
 	 [ARM](https://www.blackhat.com/presentations/bh-europe-04/bh-eu-04-dehaas/bh-eu-04-dehaas.pdf)
 
+	 Results:
+	 	 	- 0x080036E0: bluetooth_stack_bsl (BSL)
+
+	 	basically the bluetooth functions located inside App segment
+
+	 		- 0x0800EE62: get_bluetooth_id 
+	 		- 0x08012C44: exti_bluetooth_record
+	 		- 0x08018868: rf_record_bluetooth
+	 		- 0x080214A0: printf_bluetooth_id
+
+	 	As added value we can explain more the fonctionality of each function using dynamic analysis.
+
 4. Verify this by putting a break point in the firmware in this
 suspected function, then getting the phone to connect and talk to the fitbit.
+
+  Test1: Using gdb I put hb at address "0x0800EE62: get_bluetooth_id " then I pressed "continue" and I tried to connect the app to the fitbit and after while the app found the device and the  beak point  reached and gdb stopped at that address.
 
 5. At this point you can try to setup the device to be used in Avatar, and set
 Avatar so that when this breakpoint is reached, the execution is transferred to
