@@ -98,14 +98,25 @@ straightforward).
 	 		- 0x08018868: rf_record_bluetooth
 	 		- 0x080214A0: printf_bluetooth_id
 
-	 	As added value we can explain more the fonctionality of each function using dynamic analysis.
+	 	**As added value we can explain more the fonctionality of each function using dynamic analysis.**
 
 4. Verify this by putting a break point in the firmware in this
 suspected function, then getting the phone to connect and talk to the fitbit.
 
-  Test1: Using gdb I put hb at address "0x0800EE62: get_bluetooth_id " then I pressed "continue" and I tried to connect the app to the fitbit and after while the app found the device and the  beak point  reached and gdb stopped at that address.
+	Test1: Using gdb I put hb at address "0x0800EE62: get_bluetooth_id " then I pressed "continue" and I tried to connect the app to the fitbit and after while the app found the device and the  break point  reached and gdb stopped at that address.
+
+	steps
+```bash
+		$arm-none-eabi-gdb
+		$gdb source -s gdb-conf
+		$gdb monitor halt
+		$gdb hb *0x0800EE62
+		$gdb continue 
+```
 
 5. At this point you can try to setup the device to be used in Avatar, and set
 Avatar so that when this breakpoint is reached, the execution is transferred to
 the emulator. This would allow to test those pieces of code in the emulator.
 
+	--> Here basically we should try to emulate some bluetooth functions and if it is possible using "angr" 
+	
