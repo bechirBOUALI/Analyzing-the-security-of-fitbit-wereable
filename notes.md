@@ -119,4 +119,47 @@ Avatar so that when this breakpoint is reached, the execution is transferred to
 the emulator. This would allow to test those pieces of code in the emulator.
 
 	--> Here basically we should try to emulate some bluetooth functions and if it is possible using "angr" 
-	
+
+	-Using Avatar: At this point we try to set up br using avatar then transfer control to qemu but we get some errors(openocd_err.txt)
+		1. "undefined debug reason 7 - target needs reset"
+			probably OpenOCD doesn't know which state the MCU is in at the moment.So we need a halt there	
+		2. "error during read: Connection reset by peer"
+		3. "Unable to create rx_queue" in avatar.log
+		4. each time the execution stopped before reaching the breakpoint  at a random address 
+		5. I get a weird behaviour after setting up the breakpoint and begin execution then if I use 
+			* fitbit.wait() : to wait for the breakpoint but the execution stop always at "0x8000082" ? 
+			* fitbit.stop(blocking=True): the execution always exit at a random address ?
+		6. 
+
+
+
+
+
+## Fix bugs
+
+### keystone problem
+
+1. install keystone manually so avatar2 will work without errors( https://github.com/keystone-engine/keystone)
+2. I wrote "test.py" script for the demo
+3. I wrote a final file for openOCD configuration "fitbit.cfg"
+4. for avatar script need the firmware.bin
+5. after executing test.py I encountred some problems so the solution was to go to "/usr/local/lib/python2.7/dist-packages/avatar2/targets/qemu_target.py" and inside qemu_target.py change the string "configurable" with "virt-3.0"
+	--> right here everything work well execept that sometime the device crash because it need to be halted ...so I think you need to search in avatar how we can add this command "monitor halt" when gdb start working (because manually everything works well and the device dosn't crash)
+
+
+
+### others bugs 
+
+1. 
+Unhandled exception in thread started by <bound method AvatarFastQueueProcessor.__bootstrap of <AvatarFastQueueProcessor(Thread-2, stopped daemon 140533760128768)>>
+Traceback (most recent call last):
+  File "/usr/lib/python2.7/threading.py", line 774, in __bootstrap
+    self.__bootstrap_inner()
+  File "/usr/lib/python2.7/threading.py", line 814, in __bootstrap_inner
+
+2. 
+avatar.targets.QemuTarget0.RemoteMemoryProtocol.ERROR | Unable to create rx_queue:
+Traceback (most recent call last):
+  File "/usr/local/lib/python2.7/dist-packages/avatar2/protocols/remote_memory.py", line 134, in connect
+    read=True, write=False)
+ExistentialError: No queue exists with the specified name
