@@ -94,9 +94,14 @@ straightforward).
 	 	basically the bluetooth functions located inside App segment
 
 	 		- 0x0800EE62: get_bluetooth_id 
+	 			0x0800EE6C: load the mac address of the fitbit
+	 						jumping here then reading the memory at address stored in R1 
+	 						fitbit mac address: cc:d1:fa:82:9b:03
+
 	 		- 0x08012C44: exti_bluetooth_record
 	 		- 0x08018868: rf_record_bluetooth
 	 		- 0x080214A0: printf_bluetooth_id
+	 		- 0x080187D2: store the mac dst
 
 	 	**As added value we can explain more the fonctionality of each function using dynamic analysis.**
 
@@ -124,12 +129,22 @@ the emulator. This would allow to test those pieces of code in the emulator.
 		1. "undefined debug reason 7 - target needs reset"
 			probably OpenOCD doesn't know which state the MCU is in at the moment.So we need a halt there	
 		2. "error during read: Connection reset by peer"
-		3. "Unable to create rx_queue" in avatar.log
+		3. "Unable to create rx_queue" in avatar.log: maybe problem with qemu 
 		4. each time the execution stopped before reaching the breakpoint  at a random address 
 		5. I get a weird behaviour after setting up the breakpoint and begin execution then if I use 
 			* fitbit.wait() : to wait for the breakpoint but the execution stop always at "0x8000082" ? 
 			* fitbit.stop(blocking=True): the execution always exit at a random address ?
-		6. 
+		6. "avatar.targets.OpenOCDTarget0.OpenOCDProtocol.ERROR | Failed to reset the target with OpenOCD"
+
+	**important**
+
+		the breakpoint at "0x0800EE62": get_bluetooth_id is reached using the avatar but at the beginning should be reached twice (initialization):
+
+			first & second hit : get_bluetooth_id was called by "0x80187d9" instruction inside "bluetoot_record" function 
+			third hit : when we try to connect the app and the fitbit .Here a function 0x800ee55:"send_bt_id_c0" call get_bluetooth_id and then send bluetooth id to the app which will enable the pairing.
+
+		Then after reaching the first br, the execution were transfered to qemu I used Ipython.embed() and try to reach other functions
+
 
 
 
