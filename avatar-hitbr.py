@@ -5,8 +5,6 @@ import time
 from os.path import abspath 
 from avatar2 import *
 
-
-
 def main():
 
     # Configure the location of various files
@@ -28,52 +26,49 @@ def main():
 	ram  = avatar.add_memory_range(0x20000000, 0x8000)
 	mmio = avatar.add_memory_range(0x40000000, 0x1000000,forwarded=True, forwarded_to=fitbit)
 
-	avatar.init_targets()
-	
-	
-	# set hardware breakpoint at 0x0800EE62(get_bluetooth_id)
-	fitbit.set_breakpoint(0x800ee62, hardware=True)
+	try:
 
-	print ("breakpoint at 0x0800EE62")
-	
-	print(" after breakpoint $pc is: 0x%x" % fitbit.regs.pc)
-	
-	fitbit.cont()
-	print (fitbit.get_status())
+		avatar.init_targets()
+		
+		
+		# set hardware breakpoint at 0x0800EE62(get_bluetooth_id)
+		fitbit.set_breakpoint(0x800ee62, hardware=True)
 
-	n = 0
-	while True:
-		time.sleep(3)
-		print (fitbit.get_status())
-		fitbit.wait()
-
-
-		if fitbit.regs.pc == 0x0800EE62:
-			n += 1
-			print ("hit it %d times" % n)
-			print ("we are coming from func at 0x%x" % fitbit.regs.lr)
-		if n == 3:
-			break
-		print("didnt work, retry")
-		#fitbit.protocols.monitor.reset() 
-		print (fitbit.get_status())
+		print ("hardware breakpoint at 0x0800EE62")
+		
 		fitbit.cont()
 		
 
+		n = 0
+		while True:
+			time.sleep(3)
+			
+			fitbit.wait()
 
-	print(" after wait hb $pc is: 0x%x" % fitbit.regs.pc)
-	print (fitbit.get_status())
 
-	#Transfer the state from the physical device to the emulator
-	avatar.transfer_state(fitbit, qemu, sync_regs=True,synced_ranges=[ram])
+			if fitbit.regs.pc == 0x0800EE62:
+				n += 1
+				print ("hit it %d times" % n)
+				print ("My caller function at 0x%x" % fitbit.regs.lr)
+			if n == 3:
+				break
+			print("waitting for the breakpoint")
+			#fitbit.protocols.monitor.reset() 
+			fitbit.cont()
 
-	print (fitbit.get_status())
-	print("State transfer finished, emulator $pc is: 0x%x" % qemu.regs.pc)
+		#Transfer the state from the physical device to the emulator
+		avatar.transfer_state(fitbit, qemu, sync_regs=True,synced_ranges=[ram])
+
+		print("State transfer finished, emulator $pc is: 0x%x" % qemu.regs.pc)
+
+	except:
+		print("error somewhere, shutdown avatar ")
+		avatar.shutdown()
 
 	qemu.cont()
 
     # Further analysis could go here:
-	#IPython.embed()
+	IPython.embed()
 
     # Let this example run for a bit before shutting down avatar cleanly
 	time.sleep(5)
