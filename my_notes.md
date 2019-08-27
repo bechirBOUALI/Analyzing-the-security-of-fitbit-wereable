@@ -97,6 +97,16 @@ straightforward).
 	 			0x0800EE6C: load the mac address of the fitbit
 	 						jumping here then reading the memory at address stored in R1 
 	 						fitbit mac address: cc:d1:fa:82:9b:03
+	 						" mac address of another fitbit: CC65BFB0ACE6"
+	 						
+	 		**For the Demo**
+	 	    fitbit.set_breakpoint(0x0800EE6C,hardware=True)
+	 	    fitbit.cont()
+	 	    hex(fitbit.regs.pc)
+	 	    fitbit.step()
+	 	    hex(fitbit.regs.r1)
+	 	    hex(fitbit.read_memory(0x200049f0,8,1,False))
+
 
 	 		- 0x08012C44: exti_bluetooth_record
 	 		- 0x08018868: rf_record_bluetooth
@@ -178,3 +188,5 @@ Traceback (most recent call last):
   File "/usr/local/lib/python2.7/dist-packages/avatar2/protocols/remote_memory.py", line 134, in connect
     read=True, write=False)
 ExistentialError: No queue exists with the specified name
+
+
